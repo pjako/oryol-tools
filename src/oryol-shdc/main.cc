@@ -214,6 +214,7 @@ cJSON* extract_resource_info(Compiler* compiler) {
 }
 
 //------------------------------------------------------------------------------
+/*
 void fix_vertex_attr_locations(Compiler* compiler) {
     if (compiler->get_execution_model() == ExecutionModelVertex) {
         ShaderResources res = compiler->get_shader_resources();
@@ -241,6 +242,7 @@ void fix_vertex_attr_locations(Compiler* compiler) {
         }
     }
 }
+*/
 
 //------------------------------------------------------------------------------
 void fix_ub_matrix_force_colmajor(Compiler* compiler) {
@@ -287,7 +289,7 @@ void to_glsl(const vector<uint32_t>& spirv, const string& out_path, uint32_t ver
     opts.es = is_es;
     opts.vertex.fixup_clipspace = false;
     compiler.set_options(opts);
-    fix_vertex_attr_locations(&compiler);
+    // fix_vertex_attr_locations(&compiler);
     fix_ub_matrix_force_colmajor(&compiler);
     flatten_uniform_blocks(&compiler);
     write_reflection_json(&compiler, out_path + ".json");
@@ -308,7 +310,7 @@ void to_hlsl_sm5(const vector<uint32_t>& spirv, const string& out_path) {
     opts.fixup_clipspace = true;
     opts.point_size_compat = true;
     compiler.set_options(opts);
-    fix_vertex_attr_locations(&compiler);
+    // fix_vertex_attr_locations(&compiler);
     fix_ub_matrix_force_colmajor(&compiler);
     write_reflection_json(&compiler, out_path + ".json");
     string src = compiler.compile();
@@ -325,8 +327,9 @@ void to_mlsl(const vector<uint32_t>& spirv, const string& out_path) {
     CompilerMSL compiler(spirv);
     auto opts = compiler.get_options();
     opts.pad_and_pack_uniform_structs = true;
+    opts.is_rendering_points = false;
     compiler.set_options(opts);
-    fix_vertex_attr_locations(&compiler);
+    // fix_vertex_attr_locations(&compiler);
     write_reflection_json(&compiler, out_path + ".json");
     string src = compiler.compile();
     if (src.empty()) {
